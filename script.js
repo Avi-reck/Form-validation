@@ -1,6 +1,8 @@
 const form = document.getElementById("registrationForm");
 const successMessage = document.getElementById("successMessage");
 const passwordStrength = document.getElementById("passwordStrength");
+const passwordInput = document.getElementById("password");
+const passwordToggle = document.querySelector(".password-toggle");
 
 const fields = {
   prefix: document.getElementById("prefix"),
@@ -8,8 +10,9 @@ const fields = {
   lastName: document.getElementById("lastName"),
   username: document.getElementById("username"),
   dob: document.getElementById("dob"),
-  password: document.getElementById("password"),
+  password: passwordInput,
   confirmPassword: document.getElementById("confirmPassword"),
+  countryCode: document.getElementById("countryCode"),
   contact: document.getElementById("contact"),
   email: document.getElementById("email"),
   age: document.getElementById("age")
@@ -94,8 +97,13 @@ function validateForm() {
     isValid = false;
   }
 
-  if (!/^[0-9]{10}$/.test(fields.contact.value.trim())) {
-    showError("contact", "Enter a valid 10 digit contact number.");
+  if (!fields.countryCode.value) {
+    showError("countryCode", "Please select country code.");
+    isValid = false;
+  }
+
+  if (!/^[0-9\s-]{7,14}$/.test(fields.contact.value.trim())) {
+    showError("contact", "Enter a valid 7 to 14 digit number.");
     isValid = false;
   }
 
@@ -132,28 +140,25 @@ function updatePasswordStrength() {
     return;
   }
 
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
+  const hasLetter = /[A-Za-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
-  if (password.length < 6 && /^[A-Za-z]+$/.test(password)) {
-    passwordStrength.textContent = "Weak password";
-    passwordStrength.classList.add("weak-password");
-  } else if (password.length < 10 && (hasUppercase || hasLowercase) && hasNumber && hasSpecial) {
+  if (hasLetter && (hasNumber || hasSpecial)) {
     passwordStrength.textContent = "Strong password";
     passwordStrength.classList.add("strong-password");
-  } else if (password.length >= 10 && (hasUppercase || hasLowercase) && hasNumber && hasSpecial) {
-    passwordStrength.textContent = "Strong password";
-    passwordStrength.classList.add("strong-password");
-  } else if (password.length >= 6 && hasNumber && (hasUppercase || hasLowercase)) {
-    passwordStrength.textContent = "Moderate password";
-    passwordStrength.classList.add("moderate-password");
   } else {
     passwordStrength.textContent = "Weak password";
     passwordStrength.classList.add("weak-password");
   }
 }
+
+passwordToggle.addEventListener("click", () => {
+  const isHidden = passwordInput.type === "password";
+
+  passwordInput.type = isHidden ? "text" : "password";
+  passwordToggle.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+});
 
 fields.password.addEventListener("input", updatePasswordStrength);
 
@@ -164,5 +169,7 @@ form.addEventListener("submit", (event) => {
     successMessage.textContent = "Form submitted successfully!";
     form.reset();
     updatePasswordStrength();
+    passwordInput.type = "password";
+    passwordToggle.setAttribute("aria-label", "Show password");
   }
 });

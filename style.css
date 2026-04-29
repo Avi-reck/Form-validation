@@ -49,6 +49,12 @@ h1 {
   gap: 8px 16px;
 }
 
+.phone-fields {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.45fr) minmax(0, 1fr);
+  gap: 8px 12px;
+}
+
 label,
 fieldset {
   display: flex;
@@ -92,6 +98,29 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(0, 167, 194, 0.18);
 }
 
+.password-control {
+  position: relative;
+}
+
+.password-control input {
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
 .gender-options {
   display: flex;
   align-items: center;
@@ -131,10 +160,6 @@ select:focus {
 
 .weak-password {
   color: #d93025;
-}
-
-.moderate-password {
-  color: #d97706;
 }
 
 .strong-password {
@@ -178,7 +203,8 @@ button:hover {
     transform: none;
   }
 
-  .form-grid {
+  .form-grid,
+  .phone-fields {
     grid-template-columns: 1fr;
   }
 }
