@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="form-panel">
+      <div class="intro">
+        <span class="eyebrow">Contact</span>
+        <h1>Send us a message</h1>
+        <p>Tell us what you need and we will get back to you shortly.</p>
+      </div>
+
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="field-group two-columns">
+          <label>
+            <span>Prefix</span>
+            <select name="prefix" id="prefix" required>
+              <option value="">Choose prefix</option>
+              <option value="mr">Mr.</option>
+              <option value="mrs">Mrs.</option>
+              <option value="ms">Ms.</option>
+              <option value="dr">Dr.</option>
+              <option value="other">Other</option>
+            </select>
+            <small class="error-message"></small>
+          </label>
+
+          <label>
+            <span>Username</span>
+            <input type="text" name="username" id="username" required>
+            <small class="error-message"></small>
+          </label>
+        </div>
+
+        <div class="field-group two-columns">
+          <label>
+            <span>First name</span>
+            <input type="text" name="firstName" id="firstName" required>
+            <small class="error-message"></small>
+          </label>
+
+          <label>
+            <span>Last name</span>
+            <input type="text" name="lastName" id="lastName" required>
+            <small class="error-message"></small>
+          </label>
+        </div>
+
+        <div class="field-group two-columns">
+          <label>
+            <span>Date of birth</span>
+            <input type="date" name="dateOfBirth" id="dateOfBirth" required>
+            <small class="error-message"></small>
+          </label>
+
+          <label>
+            <span>Age</span>
+            <input type="number" name="age" id="age" min="1" max="120" required>
+            <small class="error-message"></small>
+          </label>
+        </div>
+
+        <label>
+          <span>Email address</span>
+          <input type="email" name="email" id="email" required>
+          <small class="error-message"></small>
+        </label>
+
+        <label>
+          <span>Contact number</span>
+          <input type="tel" name="contactNumber" id="contactNumber" required>
+          <small class="error-message"></small>
+        </label>
+
+        <div class="field-group two-columns">
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" id="password" required>
+            <small class="error-message"></small>
+          </label>
+
+          <label>
+            <span>Confirm password</span>
+            <input type="password" name="confirmPassword" id="confirmPassword" required>
+            <small class="error-message"></small>
+          </label>
+        </div>
+
+        <fieldset class="radio-field">
+          <legend>Gender</legend>
+          <div class="radio-options">
+            <label>
+              <input type="radio" name="gender" value="female" required>
+              <span>Female</span>
+            </label>
+            <label>
+              <input type="radio" name="gender" value="male">
+              <span>Male</span>
+            </label>
+            <label>
+              <input type="radio" name="gender" value="other">
+              <span>Other</span>
+            </label>
+          </div>
+          <small class="error-message" id="genderError"></small>
+        </fieldset>
+
+        <label>
+          <span>Message</span>
+          <textarea name="message" id="message" rows="5" required></textarea>
+          <small class="error-message"></small>
+        </label>
+
+        <label class="checkbox-field">
+          <input type="checkbox" name="consent" id="consent" required>
+          <span>I agree to be contacted about my message.</span>
+        </label>
+        <small class="error-message checkbox-error" id="consentError"></small>
+
+        <button type="submit">Submit message</button>
+        <p class="success-message" id="successMessage"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
