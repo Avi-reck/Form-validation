@@ -137,7 +137,13 @@ function updatePasswordStrength() {
   const hasNumber = /[0-9]/.test(password);
   const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
-  if (password.length >= 8 && hasUppercase && hasLowercase && hasNumber && hasSpecial) {
+  if (password.length < 6 && /^[A-Za-z]+$/.test(password)) {
+    passwordStrength.textContent = "Weak password";
+    passwordStrength.classList.add("weak-password");
+  } else if (password.length < 10 && (hasUppercase || hasLowercase) && hasNumber && hasSpecial) {
+    passwordStrength.textContent = "Strong password";
+    passwordStrength.classList.add("strong-password");
+  } else if (password.length >= 10 && (hasUppercase || hasLowercase) && hasNumber && hasSpecial) {
     passwordStrength.textContent = "Strong password";
     passwordStrength.classList.add("strong-password");
   } else if (password.length >= 6 && hasNumber && (hasUppercase || hasLowercase)) {
