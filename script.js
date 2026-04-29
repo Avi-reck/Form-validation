@@ -1,150 +1,162 @@
-const form = document.querySelector("#contactForm");
-const successMessage = document.querySelector("#successMessage");
+const form = document.getElementById("registrationForm");
+const successMessage = document.getElementById("successMessage");
+const passwordStrength = document.getElementById("passwordStrength");
 
-const validators = {
-  prefix: value => value ? "" : "Please choose a prefix.",
-
-  username: value => {
-    if (!value.trim()) return "Username is required.";
-    return /^[a-zA-Z0-9_]{4,20}$/.test(value)
-      ? ""
-      : "Use 4-20 letters, numbers, or underscores.";
-  },
-
-  firstName: value => value.trim() ? "" : "First name is required.",
-
-  lastName: value => value.trim() ? "" : "Last name is required.",
-
-  dateOfBirth: value => {
-    if (!value) return "Date of birth is required.";
-
-    const selectedDate = new Date(`${value}T00:00:00`);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return selectedDate < today ? "" : "Enter a date in the past.";
-  },
-
-  age: value => {
-    if (!value) return "Age is required.";
-
-    const age = Number(value);
-
-    return Number.isInteger(age) && age >= 1 && age <= 120
-      ? ""
-      : "Enter an age between 1 and 120.";
-  },
-
-  email: value => {
-    if (!value.trim()) return "Email address is required.";
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-      ? ""
-      : "Enter a valid email address.";
-  },
-
-  contactNumber: value => {
-    if (!value.trim()) return "Contact number is required.";
-
-    return /^[0-9+\-\s()]{7,16}$/.test(value)
-      ? ""
-      : "Enter a valid contact number.";
-  },
-
-  password: value => {
-    if (!value) return "Password is required.";
-
-    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(value)
-      ? ""
-      : "Use at least 8 characters with a letter and number.";
-  },
-
-  confirmPassword: value => {
-    if (!value) return "Please confirm your password.";
-
-    return value === document.querySelector("#password").value
-      ? ""
-      : "Passwords do not match.";
-  },
-
-  gender: value => value ? "" : "Please select a gender.",
-
-  message: value => {
-    if (!value.trim()) return "Message is required.";
-
-    return value.trim().length >= 10
-      ? ""
-      : "Message must be at least 10 characters.";
-  },
-
-  consent: checked => checked ? "" : "Please agree before submitting."
+const fields = {
+  prefix: document.getElementById("prefix"),
+  firstName: document.getElementById("firstName"),
+  lastName: document.getElementById("lastName"),
+  username: document.getElementById("username"),
+  dob: document.getElementById("dob"),
+  password: document.getElementById("password"),
+  confirmPassword: document.getElementById("confirmPassword"),
+  contact: document.getElementById("contact"),
+  email: document.getElementById("email"),
+  age: document.getElementById("age")
 };
 
-function setFieldState(field, message) {
-  const label = field.closest("label");
+function showError(fieldName, message) {
+  const error = document.getElementById(`${fieldName}Error`);
+  const field = fields[fieldName];
 
-  const error = field.name === "gender"
-    ? document.querySelector("#genderError")
-    : field.id === "consent"
-    ? document.querySelector("#consentError")
-    : label.querySelector(".error-message");
+  if (error) {
+    error.textContent = message;
+  }
 
-  field.classList.toggle("is-invalid", Boolean(message));
-  field.setAttribute("aria-invalid", Boolean(message));
-  error.textContent = message;
+  if (field) {
+    field.classList.toggle("invalid", Boolean(message));
+  }
 }
 
-function validateField(field) {
-  const value = field.type === "checkbox"
-    ? field.checked
-    : field.type === "radio"
-    ? Boolean(form.querySelector(`input[name="${field.name}"]:checked`))
-    : field.value;
+function getAgeFromDob(dobValue) {
+  const birthDate = new Date(dobValue);
+  const today = new Date();
 
-  const message = validators[field.name](value);
+  let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
 
-  setFieldState(field, message);
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    calculatedAge -= 1;
+  }
 
-  return !message;
+  return calculatedAge;
 }
 
-form.addEventListener("input", event => {
-  const field = event.target;
+function validateForm() {
+  let isValid = true;
+  successMessage.textContent = "";
 
-  if (field.name && validators[field.name]) {
-    validateField(field);
-    successMessage.textContent = "";
+  Object.keys(fields).forEach((fieldName) => showError(fieldName, ""));
+  document.getElementById("genderError").textContent = "";
+
+  if (!fields.prefix.value) {
+    showError("prefix", "Please select a prefix.");
+    isValid = false;
   }
-});
 
-form.addEventListener("change", event => {
-  const field = event.target;
-
-  if (field.name && validators[field.name]) {
-    validateField(field);
-    successMessage.textContent = "";
+  if (fields.firstName.value.trim().length < 2) {
+    showError("firstName", "First name must be at least 2 characters.");
+    isValid = false;
   }
-});
 
-form.addEventListener("submit", event => {
-  event.preventDefault();
+  if (fields.lastName.value.trim().length < 2) {
+    showError("lastName", "Last name must be at least 2 characters.");
+    isValid = false;
+  }
 
-  const fields = Array.from(form.elements).filter(field => validators[field.name]);
+  if (fields.username.value.trim().length < 4) {
+    showError("username", "Username must be at least 4 characters.");
+    isValid = false;
+  }
 
-  const uniqueFields = fields.filter((field, index, list) => {
-    return field.type !== "radio" || list.findIndex(item => item.name === field.name) === index;
-  });
+  if (!fields.dob.value) {
+    showError("dob", "Date of birth is required.");
+    isValid = false;
+  }
 
-  const isValid = uniqueFields.every(validateField);
+  if (fields.password.value.length < 6) {
+    showError("password", "Password must be at least 6 characters.");
+    isValid = false;
+  }
 
-  if (!isValid) {
-    successMessage.textContent = "";
+  if (fields.confirmPassword.value !== fields.password.value) {
+    showError("confirmPassword", "Passwords do not match.");
+    isValid = false;
+  }
+
+  const selectedGender = document.querySelector("input[name='gender']:checked");
+
+  if (!selectedGender) {
+    document.getElementById("genderError").textContent = "Please select gender.";
+    isValid = false;
+  }
+
+  if (!/^[0-9]{10}$/.test(fields.contact.value.trim())) {
+    showError("contact", "Enter a valid 10 digit contact number.");
+    isValid = false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.value.trim())) {
+    showError("email", "Enter a valid email address.");
+    isValid = false;
+  }
+
+  const age = Number(fields.age.value);
+
+  if (!Number.isInteger(age) || age < 1 || age > 120) {
+    showError("age", "Age must be between 1 and 120.");
+    isValid = false;
+  }
+
+  if (fields.dob.value && age) {
+    const calculatedAge = getAgeFromDob(fields.dob.value);
+
+    if (calculatedAge !== age) {
+      showError("age", "Age should match the date of birth.");
+      isValid = false;
+    }
+  }
+
+  return isValid;
+}
+
+function updatePasswordStrength() {
+  const password = fields.password.value;
+  passwordStrength.className = "password-strength";
+
+  if (!password) {
+    passwordStrength.textContent = "";
     return;
   }
 
-  successMessage.textContent = "Thanks! Your message is ready to send.";
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
-  form.reset();
+  if (password.length >= 8 && hasUppercase && hasLowercase && hasNumber && hasSpecial) {
+    passwordStrength.textContent = "Strong password";
+    passwordStrength.classList.add("strong-password");
+  } else if (password.length >= 6 && hasNumber && (hasUppercase || hasLowercase)) {
+    passwordStrength.textContent = "Moderate password";
+    passwordStrength.classList.add("moderate-password");
+  } else {
+    passwordStrength.textContent = "Weak password";
+    passwordStrength.classList.add("weak-password");
+  }
+}
 
-  uniqueFields.forEach(field => setFieldState(field, ""));
+fields.password.addEventListener("input", updatePasswordStrength);
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (validateForm()) {
+    successMessage.textContent = "Form submitted successfully!";
+    form.reset();
+    updatePasswordStrength();
+  }
 });
